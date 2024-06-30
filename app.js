@@ -20,25 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-  loadButton.addEventListener('click', () => {
-    const pdbId = pdbInput.value.trim();
-    if (pdbId) {
-      fetch(`https://files.rcsb.org/download/${pdbId}.pdb`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
-          }
-          return response.text();
-        })
-        .then(data => {
-          loadMolecule(data);
-        })
-        .catch(error => {
-          console.error('Error fetching PDB data:', error);
-          alert('Error fetching PDB data: ' + error.message);
-        });
-    }
-  });
+  const samplePDBData = `ATOM      1  N   ASP A   1      38.267  13.351  -6.527  1.00 12.11           N  
+ATOM      2  CA  ASP A   1      39.020  14.599  -6.800  1.00 10.13           C  
+ATOM      3  C   ASP A   1      40.538  14.387  -6.636  1.00 10.00           C  
+ATOM      4  O   ASP A   1      40.915  13.290  -6.136  1.00 10.51           O  
+ATOM      5  CB  ASP A   1      38.466  15.596  -7.813  1.00 10.00           C  
+ATOM      6  CG  ASP A   1      39.155  15.991  -9.084  1.00 12.99           C  
+ATOM      7  OD1 ASP A   1      40.374  15.795  -9.178  1.00 15.50           O  
+ATOM      8  OD2 ASP A   1      38.451  16.483  -9.968  1.00 12.53           O`;
 
   function loadMolecule(pdbData) {
     const atoms = parsePDBData(pdbData);
@@ -93,6 +82,29 @@ document.addEventListener('DOMContentLoaded', () => {
     controls.update();
     renderer.render(scene, camera);
   }
+
+  loadButton.addEventListener('click', () => {
+    const pdbId = pdbInput.value.trim();
+    if (pdbId) {
+      fetch(`https://files.rcsb.org/download/${pdbId}.pdb`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+          }
+          return response.text();
+        })
+        .then(data => {
+          loadMolecule(data);
+        })
+        .catch(error => {
+          console.error('Error fetching PDB data:', error);
+          alert('Error fetching PDB data: ' + error.message);
+        });
+    }
+  });
+
+  // Load the sample molecule on startup
+  loadMolecule(samplePDBData);
 
   animate();
 });
